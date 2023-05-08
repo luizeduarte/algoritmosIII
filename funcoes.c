@@ -24,73 +24,86 @@ void imprime_avl(struct nodo_avl *nodo){
 struct nodo_avl* aloca_nodo(int valor){
 	struct nodo_avl* novo = malloc(sizeof(struct nodo_avl));
 	novo->valor = valor;
-	novo->altura = 0; 	//nao tem filhos 
+	novo->altura = 1; 	//nao tem filhos 
 	novo->esq = NULL;
 	novo->dir = NULL;
 
 	return novo;
 }
 
-int altura(struct nodo_avl nodo, struct nodo_avl nodo2){
-	if (nodo->esq > nodo->dir)
-		return nodo->esq + 1;
+int altura(struct nodo_avl* nodo){
+	if (!nodo)
+		return -1;	//chegou na folha
+
+	int alt_esq = altura(nodo->esq);
+	int alt_dir = altura(nodo->dir);
+
+	if (alt_esq > alt_dir)
+		return alt_esq + 1;
 	else
-		return nodo->dir + 1;
+		return alt_dir + 1;
 
 }
 
 struct nodo_avl* rotacao_dir(struct nodo_avl* nodo){
-	struct nodo_avl* nodo2 = nodo->left;
-	struct nodo_avl* temp = nodo2->right;
+	struct nodo_avl* nodo2 = nodo->esq;
+	nodo->esq = nodo2->dir;
+	nodo2->pai = nodo->pai;
+	nodo->pai = nodo2;
 
-	nodo2->right = nodo;
-	nodo->left = temp;
+	if (nodo2->dir)
+		nodo2->dir->pai = nodo;
+
+	nodo2->dir = nodo;
 
 	//atualiza as alturas
-	nodo = altura(nodo->esq, nodo->dir);
-	nodo2 = altura(nodo2->esq, nodo2->dir);
+	nodo->altura = altura(nodo);
+	nodo2->altura = altura(nodo2);
 
 	return nodo2;
 }
 
 struct nodo_avl* rotacao_esq(struct nodo_avl* nodo){
-	struct nodo_avl* nodo2 = nodo->right;
-	struct nodo_avl* temp = nodo2->left;
+	struct nodo_avl* nodo2 = nodo->dir;
+	nodo->dir = nodo2->esq;
+	nodo2->pai = nodo->pai;
+	nodo->pai = nodo2;
 
-	nodo2->right = nodo;
-	nodo->left = temp;
+	if (nodo2->esq)
+		nodo2->esq->pai = nodo;
+
+	nodo2->esq = nodo;	
 
 	//atualiza as alturas
-	nodo = altura(nodo->esq, nodo->dir);
-	nodo2 = altura(nodo2->esq, nodo2->dir);
+	nodo->altura = altura(nodo);
+	nodo2->altura = altura(nodo2);
 
 	return nodo2;
 }
 
-struct nodo_avl* balanceia(struct nodo_avl* nodo, struct nodo_avl* novo){
-	//DEVE DAR SEGFAULT
-	int fator_balanceamento = nodo->esq->altura - nodo->dir->altura;
+struct nodo_avl* balanceia(struct nodo_avl* nodo, int valor){
+	int fator_balanceamento = altura(nodo->esq) - altura(nodo->dir);	//NAO GOSTEI
 
 	if (fator_balanceamento > 1){	//o lado esquerdo esta desbalanceado
-		if (novo->valor < nodo->esq->valor)
+		if (valor < nodo->esq->valor)
 			nodo = rotacao_dir(nodo);
 		else {
 			nodo = rotacao_esq(nodo->esq);
 			nodo = rotacao_dir(nodo);
 		}
 	} else if (fator_balanceamento < -1){	//lado direito desbalanceado
-		if (novo->valor > nodo->dir->valor)
-			rotacao_esq(nodo->esq);
+		if (valor > nodo->dir->valor)
+			nodo = rotacao_esq(nodo->esq);
 		else {
-			rotacao_dir(nodo->dir);
-			rotacao_esq(nodo);
+			nodo = rotacao_dir(nodo->dir);
+			nodo = rotacao_esq(nodo);
 		}
 	}
 
 	return nodo;
 }
 
-void remove(){
+/*void remove(){
 	//busca o nodo
 
 	if (!nodo->esq && !nodo->dir){	//se for a folha, apenas retira
@@ -101,34 +114,25 @@ void remove(){
 
 
 	
-}
+}*/
 
-struct nodo_avl* inclui_folha(struct nodo_avl* raiz, int valor){
-	struct nodo_avl *nodo = raiz;
-	struct nodo_avl *pai = NULL;
-
-	while (nodo){	//encontra onde deve ser inserido
-		pai = nodo;
-		if (valor < nodo->valor)
-			nodo = nodo->esq;
-
-		else if (valor > nodo->valor)
-			nodo = nodo->dir;
-	}
-
-	if (!pai)	//arvore vazia
+struct nodo_avl* inclui_folha(struct nodo_avl* nodo, int valor){
+	if (!nodo)	//fim da arvore
 		return aloca_nodo(valor);
-		
-	if (valor < pai->valor){
-		pai->esq = aloca_nodo(valor);	//adiciona na folha
-		pai = balanceia(pai, pai->esq);
 
-	} else if (valor > pai->valor){
-		pai->dir = aloca_nodo(valor);	//adiciona na folha
-		pai = balanceia(pai, pai->dir);
-	}
+	if (valor < nodo->valor)
+		nodo->esq = inclui_folha(nodo->esq, valor);
+	else if (valor > nodo->valor)
+		nodo->dir = inclui_folha(nodo->dir, valor);
+	else 
+		return NULL;	//ja existe
 
-	return raiz;
+	//atualiza a altura
+	nodo->altura = altura(nodo);
+	//balenceia
+	nodo = balanceia(nodo, valor);
+
+	return nodo;
 }
 
 
@@ -136,13 +140,12 @@ struct nodo_avl* inclui_folha(struct nodo_avl* raiz, int valor){
 int main(){
 	struct nodo_avl* raiz = NULL;
 	raiz = inclui_folha(raiz, 10);
+	printf("incluiu 10\n");
 	raiz = inclui_folha(raiz, 20);
-	raiz = inclui_folha(raiz, 30);
-	raiz = inclui_folha(raiz, 40);
-	raiz = inclui_folha(raiz, 50);
-	raiz = inclui_folha(raiz, 60);
-	raiz = inclui_folha(raiz, 70);
-	raiz = inclui_folha(raiz, 80);
+	imprime_avl(raiz);
+	printf("incluiu 20\n");
+	raiz = inclui_folha(raiz, 15);
+	printf("incluiu 15\n");
 
 	imprime_avl(raiz);
 	return 0;

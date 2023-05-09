@@ -81,58 +81,92 @@ struct nodo_avl* rotacao_esq(struct nodo_avl* nodo){
 	return nodo2;
 }
 
-struct nodo_avl* balanceia(struct nodo_avl* nodo, int valor){
-	int fator_balanceamento = altura(nodo->esq) - altura(nodo->dir);	//NAO GOSTEI
+int fator_balanceamento(struct nodo_avl* nodo){
+	return altura(nodo->esq) - altura(nodo->dir);
+}
 
-	if (fator_balanceamento > 1){	//o lado esquerdo esta desbalanceado
-		if (valor < nodo->esq->valor)
-			nodo = rotacao_dir(nodo);
-		else {
-			nodo = rotacao_esq(nodo->esq);
-			nodo = rotacao_dir(nodo);
-		}
-	} else if (fator_balanceamento < -1){	//lado direito desbalanceado
-		if (valor > nodo->dir->valor)
-			nodo = rotacao_esq(nodo->esq);
-		else {
-			nodo = rotacao_dir(nodo->dir);
-			nodo = rotacao_esq(nodo);
-		}
+struct nodo_avl* balanceia(struct nodo_avl* nodo){
+	if (fator_balanceamento(nodo) > 1){	//o lado esquerdo esta desbalanceado
+		if (fator_balanceamento(nodo->esq) < 0)	//o lado direito do filho eh mais pesado 
+			nodo->esq = rotacao_esq(nodo->esq);
+
+		nodo = rotacao_dir(nodo);
+
+	} else if (fator_balanceamento(nodo) < -1){	//lado direito desbalanceado
+		if (fator_balanceamento(nodo->dir) > 0)	//lado esquerdo do filho esta desbalanceado
+			nodo->dir = rotacao_dir(nodo->dir);
+
+		nodo = rotacao_esq(nodo);
 	}
 
 	return nodo;
 }
 
-/*void remove(){
-	//busca o nodo
+struct nodo_avl* sucessor(struct nodo_avl* nodo){
+	struct nodo_avl* temp = nodo->dir;
 
-	if (!nodo->esq && !nodo->dir){	//se for a folha, apenas retira
-		//desaloca 
-		nodo->pai = NULL;
-		return raiz;
+	while (temp->esq)
+		temp = temp->esq;
+
+	return temp;
+}
+
+
+struct nodo_avl* remove_nodo(struct nodo_avl* nodo, int valor){
+	//busca o nodo a ser removido
+	if (!nodo)	//nao encontrado
+		return nodo;
+		
+	if (valor < nodo->valor)
+		nodo->esq = remove_nodo(nodo->esq, valor);
+	else if (valor > nodo->valor)
+		nodo->dir = remove_nodo(nodo->dir, valor);
+
+	else {	//encontrou o nodo a ser removido
+		if (!nodo->esq && !nodo->dir){	//eh uma folha
+			free(nodo);
+			return NULL;
+
+		} else if(!nodo->esq ^ !nodo->dir){	//tem apenas um filho
+			struct nodo_avl* temp = nodo;
+
+			if (nodo->esq)
+				nodo = nodo->esq;
+			else 
+				nodo = nodo->dir;
+			
+			free(temp);
+		} else {	//tem dois filhos
+			struct nodo_avl* temp = sucessor(nodo);	 	//retorna um ponteiro para o sucessor do valor
+
+			nodo->valor = temp->valor;		//sobe o sucessor. Agora, por definicao da avl, o valor antigo tem no maximo um filho
+			nodo->esq = remove_nodo(nodo->esq, valor);	//remove o valor antigo
+		}
 	}
 
-
-	
-}*/
-
-struct nodo_avl* inclui_folha(struct nodo_avl* nodo, int valor){
-	if (!nodo)	//fim da arvore
-		return aloca_nodo(valor);
-
-	if (valor < nodo->valor)
-		nodo->esq = inclui_folha(nodo->esq, valor);
-	else if (valor > nodo->valor)
-		nodo->dir = inclui_folha(nodo->dir, valor);
-	else 
-		return NULL;	//ja existe
-
-	//atualiza a altura
-	nodo->altura = altura(nodo);
-	//balenceia
-	nodo = balanceia(nodo, valor);
+	nodo->altura = altura(nodo);	//atualiza a altura do pai
+	nodo = balanceia(nodo);		//balanceia apos ter retirado o filho da folha, subindo na arvore atraves da recursiva
 
 	return nodo;
+}
+
+struct nodo_avl* inclui_folha(struct nodo_avl* nodo, int valor){
+	if (!nodo)	//fim da arvore, adiciona
+		return aloca_nodo(valor);
+
+	if (valor < nodo->valor){
+		nodo->esq = inclui_folha(nodo->esq, valor);	//abre como subarvore
+		nodo->esq->pai = nodo;
+	} else if (valor > nodo->valor){
+		nodo->dir = inclui_folha(nodo->dir, valor);
+		nodo->dir->pai = nodo;
+	} else 
+		return nodo;	//ja existe
+
+	nodo->altura = altura(nodo);	//atualiza a altura do pai
+	nodo = balanceia(nodo);	//balanceia da folha para a raiz, subindo nas subarvores atraves da recursiva
+
+	return nodo;	//retorna pai da subarvore
 }
 
 
@@ -142,10 +176,14 @@ int main(){
 	raiz = inclui_folha(raiz, 10);
 	printf("incluiu 10\n");
 	raiz = inclui_folha(raiz, 20);
-	imprime_avl(raiz);
 	printf("incluiu 20\n");
+	imprime_avl(raiz);
 	raiz = inclui_folha(raiz, 15);
 	printf("incluiu 15\n");
+	imprime_avl(raiz);
+
+	remove_nodo(raiz, 10);
+	printf("removeu 10\n");
 
 	imprime_avl(raiz);
 	return 0;

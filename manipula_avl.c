@@ -53,7 +53,7 @@ int maior(int esq, int dir){	//evita que a altura tenha q ser calculada toda vez
 		return dir;
 }
 
-struct nodo_avl* rotacao_dir(struct nodo_avl* nodo){]
+struct nodo_avl* rotacao_dir(struct nodo_avl* nodo){
 	//pelos ponteiros, desce o pai e sobe o filho
 	struct nodo_avl* nodo2 = nodo->esq;
 	nodo->esq = nodo2->dir;

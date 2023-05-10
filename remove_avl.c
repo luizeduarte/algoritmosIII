@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 struct nodo_avl* antecessor(struct nodo_avl* nodo){
-	//o antecessor sera o maior valor da subarvore esquerda
+	//retorna o valor antecessor do nodo passado, ele sera o maior valor da subarvore esquerda
 	struct nodo_avl* temp = nodo->esq;
 
 	while (temp->dir)
@@ -14,6 +14,8 @@ struct nodo_avl* antecessor(struct nodo_avl* nodo){
 
 
 struct nodo_avl* remove_nodo(struct nodo_avl* nodo, int valor){
+	//recebe a raiz e o valor a ser removido, retornando a raiz atualizada
+	
 	//busca o nodo a ser removido
 	if (!nodo)	//nao encontrado
 		return nodo;

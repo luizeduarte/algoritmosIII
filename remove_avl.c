@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct nodo_avl* sucessor(struct nodo_avl* nodo){
-	//o sucessor sera o menor valor da subarvore direita
-	struct nodo_avl* temp = nodo->dir;
+struct nodo_avl* antecessor(struct nodo_avl* nodo){
+	//o antecessor sera o maior valor da subarvore esquerda
+	struct nodo_avl* temp = nodo->esq;
 
-	while (temp->esq)
-		temp = temp->esq;
+	while (temp->dir)
+		temp = temp->dir;
 
 	return temp;
 }
@@ -45,10 +45,10 @@ struct nodo_avl* remove_nodo(struct nodo_avl* nodo, int valor){
 			return nodo;	//o pai do nodo retirado recebera o filho do nodo retirado
 
 		} else {	//tem dois filhos
-			struct nodo_avl* temp = sucessor(nodo);	 	//retorna um ponteiro para o sucessor do valor
+			struct nodo_avl* temp = antecessor(nodo);	 	//retorna um ponteiro para o antecessor do valor
 
-			nodo->valor = temp->valor;	//sobe o sucessor. Agora, por definicao da avl, o valor a ser retirado tem no maximo um filho
-			nodo->dir = remove_nodo(nodo->dir, temp->valor);	//remove o valor duplicado na folha
+			nodo->valor = temp->valor;	//sobe o antecessor. Agora, por definicao da avl, o valor a ser retirado tem no maximo um filho
+			nodo->esq = remove_nodo(nodo->esq, temp->valor);	//remove o valor duplicado na folha
 		}
 	}
 

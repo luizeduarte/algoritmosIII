@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "manipula_avl.h"
 #include "insere_avl.h"
 #include "remove_avl.h"
 

@@ -24,13 +24,11 @@ void desaloca_avl(struct nodo_avl* nodo){
 
 static void imprime_avl_(struct nodo_avl *nodo, int nivel){
 	//de maneira "in order"
-	if(!nodo){
-		printf("\n");
+	if(!nodo)
 		return;
-	}
 
 	imprime_avl_(nodo->esq, nivel + 1);
-	printf("%d, %d ", nodo->valor, nivel);
+	printf("%d,%d\n", nodo->valor, nivel);
 	imprime_avl_(nodo->dir, nivel + 1);
 	return;
 }

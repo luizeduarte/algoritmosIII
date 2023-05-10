@@ -56,7 +56,7 @@ int maior(int esq, int dir){	//evita que a altura tenha q ser calculada toda vez
 }
 
 struct nodo_avl* rotacao_dir(struct nodo_avl* nodo){
-	//pelos ponteiros, desce o pai (passado como argumento) e sobe o filho
+	//pelos ponteiros, desce o pai passado como argumento e sobe seu filho, alterando a altura dos nodos e mantendo a propriedade de arvore binaria
 	struct nodo_avl* nodo2 = nodo->esq;
 	nodo->esq = nodo2->dir;
 	nodo2->pai = nodo->pai;
@@ -75,7 +75,7 @@ struct nodo_avl* rotacao_dir(struct nodo_avl* nodo){
 }
 
 struct nodo_avl* rotacao_esq(struct nodo_avl* nodo){
-	//pelos ponteiros, desce o pai (passado como argumento) e sobe o filho
+	//pelos ponteiros, desce o pai passado como argumento e sobe seu filho, alterando a altura dos nodos e mantendo a propriedade de arvore binaria
 	struct nodo_avl* nodo2 = nodo->dir;
 	nodo->dir = nodo2->esq;
 	nodo2->pai = nodo->pai;

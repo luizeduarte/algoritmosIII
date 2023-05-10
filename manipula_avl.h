@@ -7,7 +7,7 @@ struct nodo_avl{	//estrutura dos nodos quem compoem a arvore
 };
 
 
-struct nodo_avl* aloca_nodo(int valor);
+struct nodo_avl* aloca_nodo(int valor);	//aloca um novo nodo, o inicializa e retorna um ponteiro para ele
 void desaloca_avl(struct nodo_avl* nodo);
 void imprime_avl(struct nodo_avl *nodo);	//de maneira "in order"
 

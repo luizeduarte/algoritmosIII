@@ -2,6 +2,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+struct nodo_avl* aloca_nodo(int valor){
+	struct nodo_avl* novo = malloc(sizeof(struct nodo_avl));
+	novo->valor = valor;
+	novo->altura = 0; 	//nao tem filhos 
+	novo->esq = NULL;
+	novo->dir = NULL;
+
+	return novo;
+}
+
 void desaloca_avl(struct nodo_avl* nodo){
 	if (!nodo)
 		return;

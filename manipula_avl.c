@@ -56,7 +56,7 @@ int maior(int esq, int dir){	//evita que a altura tenha q ser calculada toda vez
 }
 
 struct nodo_avl* rotacao_dir(struct nodo_avl* nodo){
-	//pelos ponteiros, desce o pai e sobe o filho
+	//pelos ponteiros, desce o pai (passado como argumento) e sobe o filho
 	struct nodo_avl* nodo2 = nodo->esq;
 	nodo->esq = nodo2->dir;
 	nodo2->pai = nodo->pai;
@@ -75,7 +75,7 @@ struct nodo_avl* rotacao_dir(struct nodo_avl* nodo){
 }
 
 struct nodo_avl* rotacao_esq(struct nodo_avl* nodo){
-	//pelos ponteiros, desce o pai e sobe o filho
+	//pelos ponteiros, desce o pai (passado como argumento) e sobe o filho
 	struct nodo_avl* nodo2 = nodo->dir;
 	nodo->dir = nodo2->esq;
 	nodo2->pai = nodo->pai;
@@ -93,11 +93,14 @@ struct nodo_avl* rotacao_esq(struct nodo_avl* nodo){
 	return nodo2;
 }
 
-int fator_balanceamento(struct nodo_avl* nodo){	//calcula o fator de balanceamento atraves das alturas
+int fator_balanceamento(struct nodo_avl* nodo){	
+	//calcula o fator de balanceamento atraves das alturas
 	return altura(nodo->esq) - altura(nodo->dir);
 }
 
 struct nodo_avl* balanceia(struct nodo_avl* nodo){
+	//balanceia a avl a partir do nodo passado, verificando qual lado esta desbalanceado e fazendo as rotacoes necessarias
+	
 	if (fator_balanceamento(nodo) > 1){	//o lado esquerdo esta desbalanceado
 		if (fator_balanceamento(nodo->esq) < 0)	//o lado direito do filho eh mais pesado, tende para dois lados 
 			nodo->esq = rotacao_esq(nodo->esq);

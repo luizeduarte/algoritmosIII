@@ -6,6 +6,8 @@ struct nodo_avl{	//estrutura dos nodos quem compoem a arvore
 	struct nodo_avl *esq, *dir, *pai;
 };
 
+
+struct nodo_avl* aloca_nodo(int valor);
 void desaloca_avl(struct nodo_avl* nodo);
 void imprime_avl(struct nodo_avl *nodo);	//de maneira "in order"
 

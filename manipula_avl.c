@@ -3,6 +3,8 @@
 #include <stdio.h>
 
 struct nodo_avl* aloca_nodo(int valor){
+	//aloca um novo nodo, o inicializa e retorna um ponteiro para ele
+	
 	struct nodo_avl* novo = malloc(sizeof(struct nodo_avl));
 	novo->valor = valor;
 	novo->altura = 0; 	//nao tem filhos 
@@ -36,6 +38,7 @@ static void imprime_avl_(struct nodo_avl *nodo, int nivel){
 void imprime_avl(struct nodo_avl *nodo){
 	imprime_avl_(nodo, 0);	//recursiva
 }
+
 int altura(struct nodo_avl* nodo){
 	//verifica se o ponteiro eh null para retornar sua altura
 	if (!nodo)
@@ -45,6 +48,7 @@ int altura(struct nodo_avl* nodo){
 }
 
 int maior(int esq, int dir){	//evita que a altura tenha q ser calculada toda vez
+	//retorna o maior inteiro
 	if (esq > dir)
 		return esq;
 	else
@@ -89,19 +93,19 @@ struct nodo_avl* rotacao_esq(struct nodo_avl* nodo){
 	return nodo2;
 }
 
-int fator_balanceamento(struct nodo_avl* nodo){
+int fator_balanceamento(struct nodo_avl* nodo){	//calcula o fator de balanceamento atraves das alturas
 	return altura(nodo->esq) - altura(nodo->dir);
 }
 
 struct nodo_avl* balanceia(struct nodo_avl* nodo){
 	if (fator_balanceamento(nodo) > 1){	//o lado esquerdo esta desbalanceado
-		if (fator_balanceamento(nodo->esq) < 0)	//o lado direito do filho eh mais pesado 
+		if (fator_balanceamento(nodo->esq) < 0)	//o lado direito do filho eh mais pesado, tende para dois lados 
 			nodo->esq = rotacao_esq(nodo->esq);
 
 		nodo = rotacao_dir(nodo);
 
 	} else if (fator_balanceamento(nodo) < -1){	//lado direito desbalanceado
-		if (fator_balanceamento(nodo->dir) > 0)	//lado esquerdo do filho esta desbalanceado
+		if (fator_balanceamento(nodo->dir) > 0)	//lado esquerdo do filho esta desbalanceado, tende para dois lados
 			nodo->dir = rotacao_dir(nodo->dir);
 
 		nodo = rotacao_esq(nodo);

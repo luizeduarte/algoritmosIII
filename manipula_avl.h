@@ -15,6 +15,7 @@ int altura(struct nodo_avl* nodo);
 //recebe dois inteiros e retorna o maior
 int maior(int esq, int dir);
 
+//desce o nodo passado como argumento e sobe seu filho, alterando a altura dos nodos e mantendo a propriedade de arvore binaria
 struct nodo_avl* rotacao_dir(struct nodo_avl* nodo);
 struct nodo_avl* rotacao_esq(struct nodo_avl* nodo);
 
